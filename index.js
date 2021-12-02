@@ -13,9 +13,8 @@ app.get("/api", async (req, res) => {
   if (!req.query.url) {
     res.status(400).json({ error: "url is required" });
   } else {
-    const { headers, status, statusText, request } = await axios.get(
-      req.query.url
-    );
+    const { headers, status, statusText, request } = await axios(req.query.url);
+
     let axiosRes = {
       headers,
       status,
@@ -35,7 +34,7 @@ app.get("/api", async (req, res) => {
       axiosRes.ssl.valid_from = certificate.valid_from;
       axiosRes.ssl.valid_to = certificate.valid_to;
       console.log(axiosRes);
-      const results = [axiosRes, pallyRes];
+      const results = [axiosRes, pallyRes.issues];
       res.status(200).json(results);
     });
   }

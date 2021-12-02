@@ -8,6 +8,8 @@ const Body = () => {
   const [valid, setValid] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [url, setUrl] = useState("");
+  const [showResult, setShowResult] = useState(false);
+  const [result, setResult] = useState(null);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -37,6 +39,8 @@ const Body = () => {
 
       axios.get(`http://localhost:5000/api?url=${url}`).then((res) => {
         console.log(res);
+        setResult(res.data);
+        setShowResult(true);
       });
     }
   };
@@ -63,7 +67,7 @@ const Body = () => {
           </Col>
         </Row>
       </Form>
-      <Results />
+      {showResult && <Results result={result} />}
     </Container>
   );
 };
