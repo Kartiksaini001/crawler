@@ -13,30 +13,36 @@ app.get("/api", async (req, res) => {
   if (!req.query.url) {
     res.status(400).json({ error: "url is required" });
   } else {
-    const { headers, status, statusText, request } = await axios(req.query.url);
+    try {
+      // .status .statusText request.host request.protocol=https:
+      // Cookies array headers.server['set-cookie'][i].split(";")
 
-    let axiosRes = {
-      headers,
-      status,
-      statusText,
-      host: request.host,
-      protocol: request.protocol,
-      ssl: {},
-    };
+      const { status, statusText, headers, request } = await axios(
+        req.query.url
+      );
 
-    // .status .statusText request.host request.protocol=https:
-    // Cookies array headers.server['set-cookie'][i].split(";")
+      console.log(res);
+      let axiosRes = {
+        status,
+        statusText,
+        headers,
+        host: request.host,
+        protocol: request.protocol,
+        ssl: {},
+      };
 
-    const pallyRes = await pa11y(req.query.url);
-
-    sslCertificate.get(axiosRes.host).then((certificate) => {
+      const certificate = await sslCertificate.get(axiosRes.host);
       axiosRes.ssl.issuer = certificate.issuer;
       axiosRes.ssl.valid_from = certificate.valid_from;
       axiosRes.ssl.valid_to = certificate.valid_to;
-      console.log(axiosRes);
+
+      const pallyRes = await pa11y(req.query.url);
+
       const results = [axiosRes, pallyRes.issues];
       res.status(200).json(results);
-    });
+    } catch (err) {
+      res.status(400).json(err);
+    }
   }
 });
 

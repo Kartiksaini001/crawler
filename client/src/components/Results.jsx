@@ -16,10 +16,10 @@ const Results = ({ result }) => {
 
   const CardComp = ({ issue }) => {
     return (
-      <div class="card mb-5">
-        <div class="card-body">
+      <div className="card mb-4">
+        <div className="card-body">
           <h4>{issue.message}</h4>
-          <p class="bg-light p-3 my-3">{escapeHTML(issue.context)}</p>
+          <p className="bg-light p-3 my-3">{escapeHTML(issue.context)}</p>
         </div>
       </div>
     );
@@ -31,25 +31,42 @@ const Results = ({ result }) => {
       <Container>
         {/* Basic info about status */}
         <Row>
-          <Col xs={3}>Response Status: {status}</Col>
-          <Col xs={3}>Status Message: {`"${statusText}"`}</Col>
-          <Col xs={3}>Protocol: {protocol}</Col>
+          <Col>
+            <div className="card mb-4">
+              <div className="card-body">
+                <h4>Response</h4>
+                <div className="bg-light p-3 my-3 d-flex justify-content-around text-center">
+                  <Col>Status: {status}</Col>
+                  <Col>Message: {statusText}</Col>
+                  <Col>Protocol: {protocol.substr(0, protocol.length - 1)}</Col>
+                </div>
+              </div>
+            </div>
+          </Col>
         </Row>
-        <br />
         {/* SSL */}
         <Row>
           <Col>
-            SSL Issuer: {ssl.issuer.CN}, {ssl.issuer.O}, {ssl.issuer.C}
+            <div className="card mb-4">
+              <div className="card-body">
+                <h4>SSL Certificate</h4>
+                <div className="bg-light p-3 my-3 d-flex flex-column">
+                  <Col>
+                    SSL Issuer: {ssl.issuer.CN}, {ssl.issuer.O}, {ssl.issuer.C}
+                  </Col>
+                  <Col>Valid from: {ssl.valid_from}</Col>
+                  <Col>Valid to: {ssl.valid_to}</Col>
+                </div>
+              </div>
+            </div>
           </Col>
         </Row>
-        <br />
-        <Row>
-          <Col>Valid from: {ssl.valid_from}</Col>
-        </Row>
-        <Row>
-          <Col>Valid to: {ssl.valid_to}</Col>
-        </Row>
         {/* Pa11y */}
+        <Row>
+          <Col>
+            <h4>Accessibility Issues:</h4>
+          </Col>
+        </Row>
         <Row>
           <Col>
             <br />

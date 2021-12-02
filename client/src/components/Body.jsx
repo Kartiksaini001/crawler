@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form, Input, Button } from "reactstrap";
+import { Container, Row, Col, Form, Input, Button, Spinner } from "reactstrap";
 import validator from "validator";
 import axios from "axios";
 import Results from "./Results";
@@ -8,6 +8,7 @@ const Body = () => {
   const [valid, setValid] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -26,21 +27,13 @@ const Body = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (valid) {
-      // get request
-
-      // axios
-      //   .get(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
-      //   .then((res) => {
-      //     console.log(res);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-
+      setLoading(true);
+      
       axios.get(`http://localhost:5000/api?url=${url}`).then((res) => {
         console.log(res);
         setResult(res.data);
         setShowResult(true);
+        setLoading(false);
       });
     }
   };
@@ -67,7 +60,13 @@ const Body = () => {
           </Col>
         </Row>
       </Form>
-      {showResult && <Results result={result} />}
+      {loading ? (
+        <div className="mt-4 text-center">
+          <Spinner color="primary" type="grow" />
+        </div>
+      ) : (
+        showResult && <Results result={result} />
+      )}
     </Container>
   );
 };
