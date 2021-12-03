@@ -1,10 +1,14 @@
 import React from "react";
 import { Button, Col, Container, Row } from "reactstrap";
 import exportFromJSON from "export-from-json";
+import moment from "moment";
 
 const Results = ({ result }) => {
   const { status, statusText, headers, host, protocol, ssl } = result[0];
   const pa11yIssues = result[1];
+  const cookies = result[2];
+  // name, value, domain, expires, httpOnly, secure, size
+  // console.log(cookies);
 
   const CardComp = ({ issue }) => {
     return (
@@ -16,6 +20,7 @@ const Results = ({ result }) => {
       </div>
     );
   };
+
   const escapeHTML = (html) => {
     return html
       .replace(/&/g, "&amp;")
@@ -31,7 +36,6 @@ const Results = ({ result }) => {
       issueContext: escapeHTML(issue.context),
     }));
 
-    console.log(accessibilityIssues);
     let data = [
       {
         host,
@@ -45,8 +49,6 @@ const Results = ({ result }) => {
       ...accessibilityIssues,
     ];
 
-    console.log(data);
-
     exportFromJSON({
       data,
       fileName: "report",
@@ -58,7 +60,9 @@ const Results = ({ result }) => {
     <div>
       <br />
       <div>
-        <Button color="warning" onClick={handleDownload}>Download excel report</Button>
+        <Button color="warning" onClick={handleDownload}>
+          Download excel report
+        </Button>
       </div>
       <br />
       <Container>
@@ -92,6 +96,35 @@ const Results = ({ result }) => {
                 </div>
               </div>
             </div>
+          </Col>
+        </Row>
+        {/* Cookies */}
+        <Row>
+          <Col>
+            <h4>Cookies:</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <br />
+            {cookies.map(
+              ({ name, value, domain, expires, httpOnly, secure, size }) => (
+                <div className="card mb-4" key={name}>
+                  <div className="card-body">
+                    <h4>
+                      {name} = {value}
+                    </h4>
+                    <div className="bg-light p-3 my-3 d-flex flex-column">
+                      <Col>Domain: {domain}</Col>
+                      <Col>Expires: {moment(expires * 1000).format("LLL")}</Col>
+                      <Col>httpOnly: {httpOnly ? "true" : "false"}</Col>
+                      <Col>Secure: {secure ? "true" : "false"}</Col>
+                      <Col>Size: {size}</Col>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
           </Col>
         </Row>
         {/* Pa11y */}

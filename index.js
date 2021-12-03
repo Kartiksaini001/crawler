@@ -1,8 +1,9 @@
-import express from "express";
-import pa11y from "pa11y";
-import cors from "cors";
-import axios from "axios";
-import sslCertificate from "get-ssl-certificate";
+const express = require("express");
+const pa11y = require("pa11y");
+const cors = require("cors");
+const axios = require("axios");
+const sslCertificate = require("get-ssl-certificate");
+const CookieCrawler = require("./app.js");
 
 const PORT = process.env.PORT || 5000;
 
@@ -37,7 +38,12 @@ app.get("/api", async (req, res) => {
 
       const pallyRes = await pa11y(req.query.url);
 
-      const results = [axiosRes, pallyRes.issues];
+      const { cookies } = await CookieCrawler.CookieCrawler(
+        req.query.url,
+        1000
+      );
+
+      const results = [axiosRes, pallyRes.issues, cookies];
       res.status(200).json(results);
     } catch (err) {
       res.status(400).json(err);
