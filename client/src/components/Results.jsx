@@ -1,10 +1,21 @@
 import React from "react";
-import { Col, Container, Row } from "reactstrap";
+import { Button, Col, Container, Row } from "reactstrap";
+import exportFromJSON from "export-from-json";
 
 const Results = ({ result }) => {
   const { status, statusText, headers, host, protocol, ssl } = result[0];
   const pa11yIssues = result[1];
 
+  const CardComp = ({ issue }) => {
+    return (
+      <div className="card mb-4">
+        <div className="card-body">
+          <h4>{issue.message}</h4>
+          <p className="bg-light p-3 my-3">{issue.context}</p>
+        </div>
+      </div>
+    );
+  };
   const escapeHTML = (html) => {
     return html
       .replace(/&/g, "&amp;")
@@ -14,19 +25,41 @@ const Results = ({ result }) => {
       .replace(/'/g, "&#039;");
   };
 
-  const CardComp = ({ issue }) => {
-    return (
-      <div className="card mb-4">
-        <div className="card-body">
-          <h4>{issue.message}</h4>
-          <p className="bg-light p-3 my-3">{escapeHTML(issue.context)}</p>
-        </div>
-      </div>
-    );
+  const handleDownload = () => {
+    let accessibilityIssues = pa11yIssues.map((issue) => ({
+      accessibilityIssueMessage: issue.message,
+      issueContext: escapeHTML(issue.context),
+    }));
+
+    console.log(accessibilityIssues);
+    let data = [
+      {
+        host,
+        status,
+        statusText,
+        protocol,
+        sslIssuer: `${ssl.issuer.CN}, ${ssl.issuer.O}, ${ssl.issuer.C}`,
+        sslValidFrom: ssl.valid_from,
+        sslValidTo: ssl.valid_to,
+      },
+      ...accessibilityIssues,
+    ];
+
+    console.log(data);
+
+    exportFromJSON({
+      data,
+      fileName: "report",
+      exportType: exportFromJSON.types.xls,
+    });
   };
 
   return (
     <div>
+      <br />
+      <div>
+        <Button color="warning" onClick={handleDownload}>Download excel report</Button>
+      </div>
       <br />
       <Container>
         {/* Basic info about status */}

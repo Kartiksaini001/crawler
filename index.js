@@ -21,7 +21,6 @@ app.get("/api", async (req, res) => {
         req.query.url
       );
 
-      console.log(res);
       let axiosRes = {
         status,
         statusText,
